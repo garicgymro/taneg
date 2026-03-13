@@ -1103,19 +1103,10 @@ var followup_feedback_question = {
 
 
 
-  var timeline = [
-    consent, 
-    welcome,
-    preload,
-    instructions,
-    sendData,   // add send data here 
-    thanks
-  ];
-  /* start the experiment */
-  jsPsych.run(timeline);
-
 
 timeline.push(followup_feedback_question);
+
+timeline.push(sendData);
 
   var FinalDebrief = {
     type: jsPsychHtmlKeyboardResponse,
