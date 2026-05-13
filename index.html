@@ -20,6 +20,19 @@
 
   <body></body>
   <script>
+    childlanglabClient.init();
+
+var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+  var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+  var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+
+  jsPsych.data.addProperties({
+    subject_id: subject_id,
+    study_id: study_id,
+    session_id: session_id
+  });
+
+    
   // -----------------
   // Init jsPsych
   // -----------------
@@ -89,7 +102,9 @@ var condition = jsPsych.randomization.sampleWithoutReplacement(['Neg', 'Pos'], 1
 
       <p style="font-size:22px;">Its speakers number only in the thousands, and all speak at least one other language (mostly English).</p>
 
-      <p style="font-size:22px;">Daily use in its native region is declining.</p>
+      <p style="font-size:22px;">Only a subset of them use it daily.</p>
+
+      <p style="font-size:22px;">Without learners like you, its future is very uncertain!</p>
       `,
     post_trial_gap: 1000
   };
@@ -120,9 +135,13 @@ var condition = jsPsych.randomization.sampleWithoutReplacement(['Neg', 'Pos'], 1
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <img src="img/landscape.jpg" style="width:400px;">
-      <p style="font-size:24px;">Taneg is a minority language.</p>
+      <p style="font-size:24px;">Taneg is a thriving minority language.</p>
 
-      <p style="font-size:22px;">It continues to be used daily by thousands of people in its native region, all of whom also speak other languages (especially English)!</p>
+      <p style="font-size:22px;">It is spoken by thousands of people, all of whom also speak other languages (especially English)!</p>
+
+      <p style="font-size:22px;">It is still the daily language for many.</p>
+
+  <p style="font-size:22px;">Learners like you can be part of its future!</p>
       `,
     post_trial_gap: 1000
   };
@@ -1110,20 +1129,27 @@ timeline.push(sendData);
 
   var FinalDebrief = {
     type: jsPsychHtmlKeyboardResponse,
+    choices: "NO_KEYS",
     stimulus: `
       <p style="font-size:20px;">Thank you for your participation!</p>
     <p style="font-size:20px;">This experiment was designed to investigate motivation and engagement in the learning of minority languages.</p>
   <p style="font-size:20px;">There is in fact no real language called Taneg, but it was closely based on existing minority languages.</p>
-      <p style="font-size:20px;">Please press any key to continue and complete the experiment.</p>
+      <p style="font-size:20px;">Please click below to return to Prolific:</p>
+    <a href="https://app.prolific.com/submissions/complete?cc=C16K0UKJ">
+      Click here to return to Prolific
+    </a>
 
-      `,
-    post_trial_gap: 1000
+      `
   };
+
+
+
+
 
 timeline.push(FinalDebrief);
 
 
-
+// https://app.prolific.com/submissions/complete?cc=C16K0UKJ
 
   // var sentence_selection = {
   //   type: jsPsychImageButtonResponse,
