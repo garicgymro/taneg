@@ -14,7 +14,10 @@ jobs:
           fetch-depth: 0   # fetch full history, not just latest commit
 
       - name: Push to GitLab
-        run: |
-          git remote add gitlab https://GarethRoberts:${{ secrets.GITLAB_TOKEN }}@gitlab.pavlovia.org/GarethRoberts/taneg.git
-          git push gitlab --all
-          git push gitlab --tags
+              run: |
+                git remote add gitlab https://GarethRoberts:${{ secrets.GITLAB_TOKEN }}@gitlab.pavlovia.org/GarethRoberts/taneg.git
+                git push gitlab --all 2>&1
+                git push gitlab --tags 2>&1
+              env:
+                GIT_TRACE: 1
+                GIT_CURL_VERBOSE: 1
