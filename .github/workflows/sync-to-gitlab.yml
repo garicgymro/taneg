@@ -15,6 +15,8 @@ jobs:
 
       - name: Push to GitLab
         run: |
-          git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.pavlovia.org/GarethRoberts/taneg.git
+          git remote add gitlab https://GarethRoberts:${{ secrets.GITLAB_TOKEN }}@gitlab.pavlovia.org/GarethRoberts/taneg.git
           git push gitlab --all
           git push gitlab --tags
+
+git remote add gitlab https://GarethRoberts:${{ secrets.GITLAB_TOKEN }}@gitlab.pavlovia.org/GarethRoberts/taneg
