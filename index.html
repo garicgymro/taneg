@@ -81,7 +81,7 @@
   var intro = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
-    <p style="font-size:20px;">The purpose of this is to introduce you to a language.<p/> 
+    <p style="font-size:20px;">The purpose of this is to introduce you to a language.</p> 
     <p style="font-size:20px;">Please do your best to learn it, please remain focused on this app, and please do not switch to other tabs!</p>
     <p style="font-size:20px;">But please do <strong>not</strong> make notes! We want to see how well you do just by engaging with the app!</p>
     <p style="font-size:20px;">Press any key to continue.</p>
@@ -203,23 +203,28 @@
 
 
 
-var comprehension_check = (function() {
+
+
+
+var comprehension_check1 = (function() {
   var options = [
     'Take notes to help me remember',
     'Engage with the app without making notes',
     'Switch to other tabs if I need a break',
     'Use a dictionary to help me'
   ];
-  var shuffled = jsPsych.randomization.shuffle(options);
+  var shuffled; // will be set when the trial runs
 
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-      <p style="font-size:22px;">Let's see if you were paying attention!</p>
-      <p style="font-size:20px;">Which of the following are you allowed to do during this study?</p>
-    `,
-    choices: shuffled,
-    button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
+  <p style="font-size:22px;">Let's see if you were paying attention!</p>
+  <p style="font-size:20px;">Which of the following are you allowed to do during this study?</p>
+`,
+    choices: function() {
+      shuffled = jsPsych.randomization.shuffle(options);
+      return shuffled;
+    },
     data: {
       task: 'comprehension_check',
       correct_response: 'Engage with the app without making notes'
@@ -230,7 +235,6 @@ var comprehension_check = (function() {
     }
   };
 })();
-
 
 
 
@@ -294,10 +298,10 @@ var comprehension_loop1 = {
 };
 
 
-var intro_confirmation = {
+var info_confirmation = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <p style="font-size:20px;">Good! You should not take notes, switch tabs, or use a dictionary!<p/> 
+    <p style="font-size:20px;">Good! You should not take notes, switch tabs, or use a dictionary!</p> 
     <p style="font-size:20px;">Press any key to continue.</p>
 
     `,
