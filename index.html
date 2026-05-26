@@ -241,7 +241,7 @@ var comprehension_check1 = (function() {
 
 
 
-
+var comprehension_loop1_attempts = 0;
 
 
 var comprehension_loop1 = {
@@ -249,9 +249,11 @@ var comprehension_loop1 = {
   loop_function: function() {
     let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
     if (!last.correct) {
+      comprehension_loop1_attempts++;
       alert("That's not quite right — please re-read the instructions.");
       return true;   // repeat
     }
+    jsPsych.data.addProperties({ comprehension_loop1_attempts: comprehension_loop1_attempts });
     return false;    // move on
   }
 };
@@ -341,15 +343,18 @@ function makeInfoComprehension(condition) {
 
 var info_comprehension = makeInfoComprehension(condition);
 
+var info_comprehension_attempts = 0;
 
 var neg_comprehension_loop = {
   timeline: [TanegInfo1Neg, TanegInfo2Neg, TanegInfo3Neg, info_comprehension],
   loop_function: function() {
     let last = jsPsych.data.get().filter({ task: 'info_comprehension' }).last(1).values()[0];
     if (!last.correct) {
-      alert("That's not quite right — please re-read the instructions.");
+      info_comprehension_attempts++;
+      alert("That's not quite right—please re-read the background information.");
       return true;   // repeat
     }
+    jsPsych.data.addProperties({ info_comprehension_attempts: info_comprehension_attempts });
     return false;    // move on
   }
 };
@@ -360,20 +365,45 @@ var pos_comprehension_loop = {
   loop_function: function() {
     let last = jsPsych.data.get().filter({ task: 'info_comprehension' }).last(1).values()[0];
     if (!last.correct) {
-      alert("That's not quite right — please re-read the instructions.");
+      info_comprehension_attempts++;
+      alert("That's not quite right—please re-read the background information.");
       return true;   // repeat
     }
+    jsPsych.data.addProperties({ info_comprehension_attempts: info_comprehension_attempts });
     return false;    // move on
   }
 };
 
 
 
+var pos_info_confirmation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <p style="font-size:20px;">That's right! Taneg is a thriving minority language with thousands of multilingual speakers as well as original literature.</p> 
+    <p style="font-size:20px;">Press any key to continue.</p>
+
+    `,
+  post_trial_gap: 1000
+};
+
+
+var neg_info_confirmation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <p style="font-size:20px;">That's right! Taneg is an endangered language whose speakers number only in the thousands and all of whom speak other languages; there is a small amount of original literature.</p> 
+    <p style="font-size:20px;">Press any key to continue.</p>
+
+    `,
+  post_trial_gap: 1000
+};
+
+
+
 
 if (condition === 'Neg') {
-  timeline.push(welcome,comprehension_loop1,info_confirmation,neg_comprehension_loop);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,neg_comprehension_loop,neg_info_confirmation);
 } else {
-  timeline.push(welcome,comprehension_loop1,info_confirmation,pos_comprehension_loop);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,pos_comprehension_loop,pos_info_confirmation);
 }
 jsPsych.data.addProperties({ condition: condition });
 
