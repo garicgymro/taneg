@@ -81,11 +81,10 @@
   var intro = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
-      <p style="font-size:20px;">The purpose of this is to try teach you (a bit of) a language.<p/> 
-      <p style="font-size:20px;">Please do your best to learn it, please remain focused on this app, and please do not switch to other tabs!</p>
-       <p style="font-size:20px;">But please do <strong>not</strong> make notes! We want to see how well you do just by engaging with the app!</p>
-      <p style="font-size:20px;">Press any key to continue.</p>
-
+    <p style="font-size:20px;">The purpose of this is to introduce you to a language.<p/> 
+    <p style="font-size:20px;">Please do your best to learn it, please remain focused on this app, and please do not switch to other tabs!</p>
+    <p style="font-size:20px;">But please do <strong>not</strong> make notes! We want to see how well you do just by engaging with the app!</p>
+    <p style="font-size:20px;">Press any key to continue.</p>
       `,
     post_trial_gap: 1000
   };
@@ -95,7 +94,7 @@
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <p style="font-size:20px;">The name for the language (in the language itself) is <strong>Taneg</strong>.</p> 
-      <p style="font-size:20px;">In the following screens we provide some information about Taneg.</p>
+      <p style="font-size:20px;">In the following screens we provide some information about Taneg. But first we'll check if you've understood so far...</p>
       `,
     post_trial_gap: 1000
   };
@@ -147,7 +146,7 @@
       <img src="img/landscape.jpg" style="width:400px;">
       <p style="font-size:24px;">Taneg is a thriving minority language.</p>
 
-      <p style="font-size:22px;">It is spoken by thousands of people, all of whom also speak other languages (especially English)!</p>
+      <p style="font-size:22px;">It is spoken by thousands of people, all of whom are multilingual (and most speak English)!</p>
 
       <p style="font-size:22px;">It is still the daily language for many.</p>
 
@@ -178,10 +177,170 @@
 
 
 
+
+// var comprehension_check1 = {
+//   type: jsPsychHtmlButtonResponse,
+//   stimulus: `
+//     <p style="font-size:22px;">Let's see if you were paying attention!</p>
+//     <p style="font-size:20px;">Which of the following are you allowed to do during this study?</p>
+//   `,
+//   choices: [
+//     'Take notes to help me remember',
+//     'Engage with the app without making notes',
+//     'Switch to other tabs if I need a break',
+//     'Use a dictionary to help me'
+//   ],
+//   button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
+//   data: {
+//     task: 'comprehension_check',
+//     correct_response: 1  // index of correct answer
+//   },
+//   on_finish: function(data) {
+//     data.correct = data.response === data.correct_response;
+//   }
+// };
+
+
+
+
+var comprehension_check = (function() {
+  var options = [
+    'Take notes to help me remember',
+    'Engage with the app without making notes',
+    'Switch to other tabs if I need a break',
+    'Use a dictionary to help me'
+  ];
+  var shuffled = jsPsych.randomization.shuffle(options);
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <p style="font-size:22px;">Let's see if you were paying attention!</p>
+      <p style="font-size:20px;">Which of the following are you allowed to do during this study?</p>
+    `,
+    choices: shuffled,
+    button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
+    data: {
+      task: 'comprehension_check',
+      correct_response: 'Engage with the app without making notes'
+    },
+    on_finish: function(data) {
+      data.response_label = shuffled[data.response];
+      data.correct = data.response_label === data.correct_response;
+    }
+  };
+})();
+
+
+
+
+// var comprehension_check_pos = {
+//   type: jsPsychHtmlButtonResponse,
+//   stimulus: `
+//     <p style="font-size:20px;">Which of the following is true?</p>
+//   `,
+//   choices: [
+//     '',
+//     'Thousands of people speak Taneg',
+//     '',
+//     ''
+//   ],
+//   button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
+//   data: {
+//     task: 'comprehension_check',
+//     correct_response: 1  // index of correct answer
+//   },
+//   on_finish: function(data) {
+//     data.correct = data.response === data.correct_response;
+//   }
+// };
+
+
+// var comprehension_check_neg = {
+//   type: jsPsychHtmlButtonResponse,
+//   stimulus: `
+//     <p style="font-size:20px;">Which of the following is true?</p>
+//   `,
+//   choices: [
+//     '',
+//     '',
+//     '',
+//     ''
+//   ],
+//   button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
+//   data: {
+//     task: 'comprehension_check',
+//     correct_response: 1  // index of correct answer
+//   },
+//   on_finish: function(data) {
+//     data.correct = data.response === data.correct_response;
+//   }
+// };
+
+
+
+
+
+var comprehension_loop1 = {
+  timeline: [intro, intro2, comprehension_check1],
+  loop_function: function() {
+    let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
+    if (!last.correct) {
+      alert("That's not quite right — please re-read the instructions.");
+      return true;   // repeat
+    }
+    return false;    // move on
+  }
+};
+
+
+var intro_confirmation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <p style="font-size:20px;">Good! You should not take notes, switch tabs, or use a dictionary!<p/> 
+    <p style="font-size:20px;">Press any key to continue.</p>
+
+    `,
+  post_trial_gap: 1000
+};
+
+
+
+// var comprehension_loop_neg = {
+//   timeline: [intro, intro2, comprehension_check1],
+//   loop_function: function() {
+//     let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
+//     if (!last.correct) {
+//       alert("That's not quite right — please re-read the instructions.");
+//       return true;   // repeat
+//     }
+//     return false;    // move on
+//   }
+// };
+
+
+// var comprehension_loop_pos = {
+//   timeline: [intro, intro2, comprehension_check1],
+//   loop_function: function() {
+//     let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
+//     if (!last.correct) {
+//       alert("That's not quite right — please re-read the instructions.");
+//       return true;   // repeat
+//     }
+//     return false;    // move on
+//   }
+// };
+
+
+
+
+
+
+
 if (condition === 'Neg') {
-  timeline.push(welcome,intro,intro2,TanegInfo1Neg, TanegInfo2Neg, TanegInfo3Neg);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,TanegInfo1Neg, TanegInfo2Neg, TanegInfo3Neg);
 } else {
-  timeline.push(welcome,intro,intro2,TanegInfo1Pos, TanegInfo2Pos, TanegInfo3Pos);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,TanegInfo1Pos, TanegInfo2Pos, TanegInfo3Pos);
 }
 jsPsych.data.addProperties({ condition: condition });
 
