@@ -225,6 +225,7 @@ var comprehension_check1 = (function() {
       shuffled = jsPsych.randomization.shuffle(options);
       return shuffled;
     },
+    button_html: '<button class="jspsych-btn" style="font-size:20px; margin: 8px;">%choice%</button>',
     data: {
       task: 'comprehension_check',
       correct_response: 'Engage with the app without making notes'
@@ -238,48 +239,6 @@ var comprehension_check1 = (function() {
 
 
 
-// var comprehension_check_pos = {
-//   type: jsPsychHtmlButtonResponse,
-//   stimulus: `
-//     <p style="font-size:20px;">Which of the following is true?</p>
-//   `,
-//   choices: [
-//     '',
-//     'Thousands of people speak Taneg',
-//     '',
-//     ''
-//   ],
-//   button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
-//   data: {
-//     task: 'comprehension_check',
-//     correct_response: 1  // index of correct answer
-//   },
-//   on_finish: function(data) {
-//     data.correct = data.response === data.correct_response;
-//   }
-// };
-
-
-// var comprehension_check_neg = {
-//   type: jsPsychHtmlButtonResponse,
-//   stimulus: `
-//     <p style="font-size:20px;">Which of the following is true?</p>
-//   `,
-//   choices: [
-//     '',
-//     '',
-//     '',
-//     ''
-//   ],
-//   button_html: '<button class="jspsych-btn" style="font-size:18px; margin: 8px;">%choice%</button>',
-//   data: {
-//     task: 'comprehension_check',
-//     correct_response: 1  // index of correct answer
-//   },
-//   on_finish: function(data) {
-//     data.correct = data.response === data.correct_response;
-//   }
-// };
 
 
 
@@ -310,41 +269,111 @@ var info_confirmation = {
 
 
 
-// var comprehension_loop_neg = {
-//   timeline: [intro, intro2, comprehension_check1],
-//   loop_function: function() {
-//     let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
-//     if (!last.correct) {
-//       alert("That's not quite right — please re-read the instructions.");
-//       return true;   // repeat
-//     }
-//     return false;    // move on
-//   }
-// };
-
-
-// var comprehension_loop_pos = {
-//   timeline: [intro, intro2, comprehension_check1],
-//   loop_function: function() {
-//     let last = jsPsych.data.get().filter({ task: 'comprehension_check' }).last(1).values()[0];
-//     if (!last.correct) {
-//       alert("That's not quite right — please re-read the instructions.");
-//       return true;   // repeat
-//     }
-//     return false;    // move on
-//   }
-// };
 
 
 
+function makeInfoComprehension(condition) {
+  var questions, correctAnswers;
+
+  if (condition === 'Neg') {
+    questions = [
+      'Taneg is an endangered language',
+      'Taneg is spoken by a few million people',
+      'All Taneg speakers also speak another language',
+      'Taneg speakers mostly also speak English',
+      'Some Taneg speakers use it daily',
+      'There is a lot of literature written in Taneg'
+    ];
+    correctAnswers = new Set([
+      'Taneg is an endangered language',
+      'All Taneg speakers also speak another language',
+      'Taneg speakers mostly also speak English',
+      'Some Taneg speakers use it daily',
+    ]);
+  } else {
+    questions = [
+      'Taneg is a thriving minority language',
+      'Taneg is spoken by only a few hundred people',
+      'All Taneg speakers are multilingual',
+      'Taneg speakers mostly also speak English',
+      'No Taneg speakers use it daily',
+      'There is original literature written in Taneg'
+    ];
+    correctAnswers = new Set([
+      'Taneg is a thriving minority language',
+      'All Taneg speakers are multilingual',
+      'Taneg speakers mostly also speak English',
+      'There is original literature written in Taneg'
+    ]);
+  }
+
+  var selectedAtSubmit = []; 
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    data: { task: 'info_comprehension', condition: condition },
+    stimulus: function() {
+      var checkboxes = questions.map((q, i) => `
+        <div>
+          <input type="checkbox" id="opt${i}" value="${q}">
+          <label for="opt${i}" style="font-size:20px;">${q}</label>
+        </div>
+      `).join('');
+      return `
+        <p style="font-size:22px;">Select <strong>all</strong> statements that are true about Taneg:</p>
+        ${checkboxes}
+        <br>
+      `;
+    },
+    choices: ['Submit'],
+    button_html: '<button class="jspsych-btn" style="font-size:18px; margin-top:12px;" ' +
+      'onclick="window._infoSelected = Array.from(document.querySelectorAll(\'input[type=checkbox]:checked\')).map(el => el.value)">%choice%</button>',
+    on_finish: function(data) {
+      var selected = new Set(window._infoSelected || []);
+      data.selected = [...selected];
+      data.correct = (
+        [...correctAnswers].every(a => selected.has(a)) &&
+        [...selected].every(a => correctAnswers.has(a))
+      );
+    }
+  };
+}
+
+var info_comprehension = makeInfoComprehension(condition);
+
+
+var neg_comprehension_loop = {
+  timeline: [TanegInfo1Neg, TanegInfo2Neg, TanegInfo3Neg, info_comprehension],
+  loop_function: function() {
+    let last = jsPsych.data.get().filter({ task: 'info_comprehension' }).last(1).values()[0];
+    if (!last.correct) {
+      alert("That's not quite right — please re-read the instructions.");
+      return true;   // repeat
+    }
+    return false;    // move on
+  }
+};
+
+
+var pos_comprehension_loop = {
+  timeline: [TanegInfo1Pos, TanegInfo2Pos, TanegInfo3Pos, info_comprehension],
+  loop_function: function() {
+    let last = jsPsych.data.get().filter({ task: 'info_comprehension' }).last(1).values()[0];
+    if (!last.correct) {
+      alert("That's not quite right — please re-read the instructions.");
+      return true;   // repeat
+    }
+    return false;    // move on
+  }
+};
 
 
 
 
 if (condition === 'Neg') {
-  timeline.push(welcome,comprehension_loop1,info_confirmation,TanegInfo1Neg, TanegInfo2Neg, TanegInfo3Neg);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,neg_comprehension_loop);
 } else {
-  timeline.push(welcome,comprehension_loop1,info_confirmation,TanegInfo1Pos, TanegInfo2Pos, TanegInfo3Pos);
+  timeline.push(welcome,comprehension_loop1,info_confirmation,pos_comprehension_loop);
 }
 jsPsych.data.addProperties({ condition: condition });
 
